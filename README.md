@@ -1,6 +1,6 @@
 # MeuProjeto
 
-Projeto de estudo com arquitetura moderna em .NET 9 — explorando práticas profissionais como autenticação com JWT, microserviços, mensageria, observabilidade, Docker e Kubernetes.
+Projeto de estudo com arquitetura moderna em .NET 9 explorando práticas profissionais como autenticação com JWT, microserviços, mensageria, observabilidade, Docker e Kubernetes.
 
 ---
 
