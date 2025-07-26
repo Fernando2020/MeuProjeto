@@ -1,3 +1,4 @@
+using MeuProjeto.Api;
 using MeuProjeto.Application;
 using MeuProjeto.Infrastructure;
 
@@ -27,5 +28,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCustomExceptionHandler();
 
 app.Run();

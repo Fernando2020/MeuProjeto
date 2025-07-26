@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MeuProjeto.Application.DTOs.Users;
 using MeuProjeto.Core.Data;
+using MeuProjeto.Core.Exceptions;
 using MeuProjeto.Core.Repositories;
 
 namespace MeuProjeto.Application.UseCases.Users.RefreshToken
@@ -22,11 +23,16 @@ namespace MeuProjeto.Application.UseCases.Users.RefreshToken
         {
             var validationResult = await _validator.ValidateAsync(request);
             if (!validationResult.IsValid)
-                throw new ValidationException(validationResult.Errors);
+            {
+                var errors = validationResult.Errors
+                    .Select(e => $"{e.PropertyName}: {e.ErrorMessage}")
+                    .ToList();
+                throw new MyValidationException(errors);
+            }
 
             var user = await _repo.GetByRefreshTokenAsync(request.RefreshToken);
             if (user == null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
-                throw new UnauthorizedAccessException();
+                throw new MyUnauthorizedException();
 
             var newAccess = $"access-{Guid.NewGuid()}";
             var newRefresh = $"refresh-{Guid.NewGuid()}";

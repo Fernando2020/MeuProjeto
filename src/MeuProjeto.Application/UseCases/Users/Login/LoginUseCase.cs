@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MeuProjeto.Application.DTOs.Users;
 using MeuProjeto.Core.Data;
+using MeuProjeto.Core.Exceptions;
 using MeuProjeto.Core.Repositories;
 
 namespace MeuProjeto.Application.UseCases.Users.Login
@@ -22,11 +23,16 @@ namespace MeuProjeto.Application.UseCases.Users.Login
         {
             var validationResult = await _validator.ValidateAsync(request);
             if (!validationResult.IsValid)
-                throw new ValidationException(validationResult.Errors);
+            {
+                var errors = validationResult.Errors
+                    .Select(e => $"{e.PropertyName}: {e.ErrorMessage}")
+                    .ToList();
+                throw new MyValidationException(errors);
+            }
 
             var user = await _repo.GetByEmailAsync(request.Email);
             if (user == null || user.PasswordHash != request.Password)
-                throw new UnauthorizedAccessException();
+                throw new MyUnauthorizedException();
 
             var access = $"access-{Guid.NewGuid()}";
             var refresh = $"refresh-{Guid.NewGuid()}";
