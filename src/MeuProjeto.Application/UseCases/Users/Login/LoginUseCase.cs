@@ -2,8 +2,6 @@
 using MeuProjeto.Application.DTOs.Users;
 using MeuProjeto.Core.Data;
 using MeuProjeto.Core.Repositories;
-using System.ComponentModel.DataAnnotations;
-using ValidationException = FluentValidation.ValidationException;
 
 namespace MeuProjeto.Application.UseCases.Users.Login
 {
