@@ -1,6 +1,9 @@
-﻿using MeuProjeto.Application.DTOs.Users;
+﻿using FluentValidation;
+using MeuProjeto.Application.DTOs.Users;
 using MeuProjeto.Core.Data;
 using MeuProjeto.Core.Repositories;
+using System.ComponentModel.DataAnnotations;
+using ValidationException = FluentValidation.ValidationException;
 
 namespace MeuProjeto.Application.UseCases.Users.Login
 {
@@ -8,15 +11,21 @@ namespace MeuProjeto.Application.UseCases.Users.Login
     {
         private readonly IUnitOfWork _uow;
         private readonly IUserRepository _repo;
+        private readonly IValidator<LoginRequestDto> _validator;
 
-        public LoginUseCase(IUnitOfWork uow, IUserRepository repo)
+        public LoginUseCase(IUnitOfWork uow, IUserRepository repo, IValidator<LoginRequestDto> validator)
         {
             _uow = uow;
             _repo = repo;
+            _validator = validator;
         }
 
         public async Task<LoginResponseDto> ExecuteAsync(LoginRequestDto request)
         {
+            var validationResult = await _validator.ValidateAsync(request);
+            if (!validationResult.IsValid)
+                throw new ValidationException(validationResult.Errors);
+
             var user = await _repo.GetByEmailAsync(request.Email);
             if (user == null || user.PasswordHash != request.Password)
                 throw new UnauthorizedAccessException();
