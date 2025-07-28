@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MeuProjeto.Infrastructure
+namespace MeuProjeto.Infrastructure.Extensions
 {
     public static class ServiceCollectionExtensions
     {

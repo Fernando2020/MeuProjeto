@@ -1,6 +1,6 @@
 ﻿using MeuProjeto.Api.Middlewares;
 
-namespace MeuProjeto.Api
+namespace MeuProjeto.Api.Extensions
 {
     public static class MiddlewareExtensions
     {

@@ -1,6 +1,6 @@
-using MeuProjeto.Api;
-using MeuProjeto.Application;
-using MeuProjeto.Infrastructure;
+using MeuProjeto.Api.Extensions;
+using MeuProjeto.Application.Extensions;
+using MeuProjeto.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

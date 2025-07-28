@@ -6,7 +6,7 @@ using MeuProjeto.Application.UseCases.Users.Register;
 using MeuProjeto.Application.UseCases.Users.UserProfile;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MeuProjeto.Application
+namespace MeuProjeto.Application.Extensions
 {
     public static class ServiceCollectionExtensions
     {
