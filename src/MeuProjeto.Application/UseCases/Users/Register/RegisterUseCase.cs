@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
 using MeuProjeto.Application.DTOs.Users;
+using MeuProjeto.Application.Extensions;
 using MeuProjeto.Core.Data;
 using MeuProjeto.Core.Entities;
 using MeuProjeto.Core.Exceptions;
-using MeuProjeto.Core.Extensions;
 using MeuProjeto.Core.Repositories;
 using MeuProjeto.Core.Security;
 
@@ -31,13 +31,8 @@ namespace MeuProjeto.Application.UseCases.Users.Register
         public async Task<RegisterResponseDto> ExecuteAsync(RegisterRequestDto request)
         {
             var validationResult = await _validator.ValidateAsync(request);
-            if (validationResult.IsValid.IsFalse())
-            {
-                var errors = validationResult.Errors
-                    .Select(e => $"{e.PropertyName}: {e.ErrorMessage}")
-                    .ToList();
-                throw new MyValidationException(errors);
-            }
+            if (!validationResult.IsValid)
+                throw new MyValidationException(validationResult.Errors.ToStringList());
 
             var exists = await _repo.GetByEmailAsync(request.Email);
             if (exists is not null)

@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using MeuProjeto.Application.DTOs.Users;
+using MeuProjeto.Application.Extensions;
 using MeuProjeto.Core.Data;
 using MeuProjeto.Core.Exceptions;
-using MeuProjeto.Core.Extensions;
 using MeuProjeto.Core.Repositories;
 using MeuProjeto.Core.Security;
 
@@ -28,16 +28,11 @@ namespace MeuProjeto.Application.UseCases.Users.RefreshToken
         public async Task<LoginResponseDto> ExecuteAsync(RefreshTokenRequestDto request)
         {
             var validationResult = await _validator.ValidateAsync(request);
-            if (validationResult.IsValid.IsFalse())
-            {
-                var errors = validationResult.Errors
-                    .Select(e => $"{e.PropertyName}: {e.ErrorMessage}")
-                    .ToList();
-                throw new MyValidationException(errors);
-            }
+            if (!validationResult.IsValid)
+                throw new MyValidationException(validationResult.Errors.ToStringList());
 
             var user = await _repo.GetByRefreshTokenAsync(request.RefreshToken);
-            if (user == null || _refreshTokenGenerator.Verify(user.RefreshTokenExpiryTime).IsFalse())
+            if (user == null || !_refreshTokenGenerator.Verify(user.RefreshTokenExpiryTime))
                 throw new MyUnauthorizedException();
 
             user.RefreshToken = _refreshTokenGenerator.GenerateToken();

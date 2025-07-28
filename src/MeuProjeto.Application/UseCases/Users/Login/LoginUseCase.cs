@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using MeuProjeto.Application.DTOs.Users;
+using MeuProjeto.Application.Extensions;
 using MeuProjeto.Core.Data;
 using MeuProjeto.Core.Exceptions;
-using MeuProjeto.Core.Extensions;
 using MeuProjeto.Core.Repositories;
 using MeuProjeto.Core.Security;
 
@@ -30,16 +30,11 @@ namespace MeuProjeto.Application.UseCases.Users.Login
         public async Task<LoginResponseDto> ExecuteAsync(LoginRequestDto request)
         {
             var validationResult = await _validator.ValidateAsync(request);
-            if (validationResult.IsValid.IsFalse())
-            {
-                var errors = validationResult.Errors
-                    .Select(e => $"{e.PropertyName}: {e.ErrorMessage}")
-                    .ToList();
-                throw new MyValidationException(errors);
-            }
+            if (!validationResult.IsValid)
+                throw new MyValidationException(validationResult.Errors.ToStringList());
 
             var user = await _repo.GetByEmailAsync(request.Email);
-            if (user == null || _passwordHasher.Verify(request.Password, user.PasswordHash).IsFalse())
+            if (user == null || !_passwordHasher.Verify(request.Password, user.PasswordHash))
                 throw new MyUnauthorizedException();
 
             user.RefreshToken = _refreshTokenGenerator.GenerateToken();

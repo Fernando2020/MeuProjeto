@@ -15,8 +15,4 @@
     <ProjectReference Include="..\MeuProjeto.Infrastructure\MeuProjeto.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
-
 </Project>

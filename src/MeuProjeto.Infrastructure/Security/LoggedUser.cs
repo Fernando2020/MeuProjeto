@@ -1,6 +1,5 @@
 ﻿using MeuProjeto.Core.Entities;
 using MeuProjeto.Core.Exceptions;
-using MeuProjeto.Core.Extensions;
 using MeuProjeto.Core.Security;
 using MeuProjeto.Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
@@ -23,7 +22,7 @@ namespace MeuProjeto.Infrastructure.Security
         public Guid GetUserId()
         {
             var sub = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrWhiteSpace(sub) || Guid.TryParse(sub, out var userId).IsFalse())
+            if (string.IsNullOrWhiteSpace(sub) || !Guid.TryParse(sub, out var userId))
                 throw new MyUnauthorizedException();
 
             return userId;
