@@ -17,6 +17,7 @@ namespace MeuProjeto.Infrastructure
             AddDbContext(services, configuration);
             AddRepositories(services);
             AddSecurity(services, configuration);
+            AddLoggedUser(services);
 
             return services;
         }
@@ -38,6 +39,11 @@ namespace MeuProjeto.Infrastructure
             services.AddScoped<IRefreshTokenGenerator, RefreshTokenGenerator>();
             services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
             services.AddJwtAuthentication(configuration);
+        }
+
+        public static void AddLoggedUser(IServiceCollection services)
+        {
+            services.AddScoped<ILoggedUser, LoggedUser>();
         }
     }
 }

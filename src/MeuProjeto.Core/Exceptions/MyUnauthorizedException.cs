@@ -6,6 +6,6 @@ namespace MeuProjeto.Core.Exceptions
     {
         public override HttpStatusCode StatusCode => HttpStatusCode.Unauthorized;
 
-        public MyUnauthorizedException(string message = "Não autorizado.") : base(message) { }
+        public MyUnauthorizedException(string message = "Usuário não autenticado.") : base(message) { }
     }
 }
