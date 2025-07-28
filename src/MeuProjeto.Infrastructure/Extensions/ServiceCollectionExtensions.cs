@@ -1,7 +1,9 @@
 ﻿using MeuProjeto.Core.Data;
+using MeuProjeto.Core.Events;
 using MeuProjeto.Core.Repositories;
 using MeuProjeto.Core.Security;
 using MeuProjeto.Infrastructure.Data;
+using MeuProjeto.Infrastructure.Events;
 using MeuProjeto.Infrastructure.Repositories;
 using MeuProjeto.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +20,7 @@ namespace MeuProjeto.Infrastructure.Extensions
             AddRepositories(services);
             AddSecurity(services, configuration);
             AddLoggedUser(services);
+            AddEvents(services);
 
             return services;
         }
@@ -44,6 +47,12 @@ namespace MeuProjeto.Infrastructure.Extensions
         public static void AddLoggedUser(IServiceCollection services)
         {
             services.AddScoped<ILoggedUser, LoggedUser>();
+        }
+
+        public static void AddEvents(IServiceCollection services)
+        {
+            services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+            services.AddScoped<IDomainEventHandler<UserRegisteredEvent>, SendWelcomeEmailHandler>();
         }
     }
 }

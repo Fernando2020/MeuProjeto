@@ -3,6 +3,7 @@ using MeuProjeto.Application.DTOs.Users;
 using MeuProjeto.Application.Extensions;
 using MeuProjeto.Core.Data;
 using MeuProjeto.Core.Entities;
+using MeuProjeto.Core.Events;
 using MeuProjeto.Core.Exceptions;
 using MeuProjeto.Core.Repositories;
 using MeuProjeto.Core.Security;
@@ -17,8 +18,9 @@ namespace MeuProjeto.Application.UseCases.Users.Register
         private readonly IRefreshTokenGenerator _refreshTokenGenerator;
         private readonly IPasswordHasher _passwordHasher;
         private readonly ITokenGenerator _tokenGenerator;
+        private readonly IDomainEventDispatcher _domainEventDispatcher;
 
-        public RegisterUseCase(IUnitOfWork uow, IUserRepository repo, IValidator<RegisterRequestDto> validator, IRefreshTokenGenerator refreshTokenGenerator, IPasswordHasher passwordHasher, ITokenGenerator tokenGenerator)
+        public RegisterUseCase(IUnitOfWork uow, IUserRepository repo, IValidator<RegisterRequestDto> validator, IRefreshTokenGenerator refreshTokenGenerator, IPasswordHasher passwordHasher, ITokenGenerator tokenGenerator, IDomainEventDispatcher domainEventDispatcher)
         {
             _uow = uow;
             _repo = repo;
@@ -26,6 +28,7 @@ namespace MeuProjeto.Application.UseCases.Users.Register
             _refreshTokenGenerator = refreshTokenGenerator;
             _passwordHasher = passwordHasher;
             _tokenGenerator = tokenGenerator;
+            _domainEventDispatcher = domainEventDispatcher;
         }
 
         public async Task<RegisterResponseDto> ExecuteAsync(RegisterRequestDto request)
@@ -50,6 +53,8 @@ namespace MeuProjeto.Application.UseCases.Users.Register
 
             await _repo.AddAsync(user);
             await _uow.SaveChangesAsync();
+
+            await _domainEventDispatcher.DispatchAsync(new UserRegisteredEvent(user.Id, user.Name, user.Email));
 
             return new RegisterResponseDto
             {
