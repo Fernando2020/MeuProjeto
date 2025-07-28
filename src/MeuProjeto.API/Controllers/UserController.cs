@@ -46,7 +46,7 @@ namespace MeuProjeto.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPost("register")]
+        [HttpPost]
         [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
