@@ -2,6 +2,7 @@
 using MeuProjeto.Application.DTOs.Users;
 using MeuProjeto.Application.UseCases.Users.Login;
 using MeuProjeto.Application.UseCases.Users.RefreshToken;
+using MeuProjeto.Application.UseCases.Users.Register;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MeuProjeto.Application
@@ -20,12 +21,14 @@ namespace MeuProjeto.Application
         {
             services.AddScoped<ILoginUseCase, LoginUseCase>();
             services.AddScoped<IRefreshTokenUseCase, RefreshTokenUseCase>();
+            services.AddScoped<IRegisterUseCase, RegisterUseCase>();
         }
 
         private static void AddValidators(IServiceCollection services)
         {
             services.AddScoped<IValidator<LoginRequestDto>, LoginRequestDtoValidator>();
             services.AddScoped<IValidator<RefreshTokenRequestDto>, RefreshTokenRequestDtoValidator>();
+            services.AddScoped<IValidator<RegisterRequestDto>, RegisterRequestDtoValidator>();
         }
     }
 }

@@ -1,22 +1,23 @@
 ﻿using FluentValidation;
 using MeuProjeto.Application.DTOs.Users;
 using MeuProjeto.Core.Data;
+using MeuProjeto.Core.Entities;
 using MeuProjeto.Core.Exceptions;
 using MeuProjeto.Core.Repositories;
 using MeuProjeto.Core.Security;
 
-namespace MeuProjeto.Application.UseCases.Users.Login
+namespace MeuProjeto.Application.UseCases.Users.Register
 {
-    public class LoginUseCase : ILoginUseCase
+    public class RegisterUseCase : IRegisterUseCase
     {
         private readonly IUnitOfWork _uow;
         private readonly IUserRepository _repo;
-        private readonly IValidator<LoginRequestDto> _validator;
+        private readonly IValidator<RegisterRequestDto> _validator;
         private readonly IRefreshTokenGenerator _refreshTokenGenerator;
         private readonly IPasswordHasher _passwordHasher;
         private readonly ITokenGenerator _tokenGenerator;
 
-        public LoginUseCase(IUnitOfWork uow, IUserRepository repo, IValidator<LoginRequestDto> validator, IRefreshTokenGenerator refreshTokenGenerator, IPasswordHasher passwordHasher, ITokenGenerator tokenGenerator)
+        public RegisterUseCase(IUnitOfWork uow, IUserRepository repo, IValidator<RegisterRequestDto> validator, IRefreshTokenGenerator refreshTokenGenerator, IPasswordHasher passwordHasher, ITokenGenerator tokenGenerator)
         {
             _uow = uow;
             _repo = repo;
@@ -26,7 +27,7 @@ namespace MeuProjeto.Application.UseCases.Users.Login
             _tokenGenerator = tokenGenerator;
         }
 
-        public async Task<LoginResponseDto> ExecuteAsync(LoginRequestDto request)
+        public async Task<RegisterResponseDto> ExecuteAsync(RegisterRequestDto request)
         {
             var validationResult = await _validator.ValidateAsync(request);
             if (!validationResult.IsValid)
@@ -37,17 +38,24 @@ namespace MeuProjeto.Application.UseCases.Users.Login
                 throw new MyValidationException(errors);
             }
 
-            var user = await _repo.GetByEmailAsync(request.Email);
-            if (user == null || !_passwordHasher.Verify(request.Password, user.PasswordHash))
-                throw new MyUnauthorizedException();
+            var exists = await _repo.GetByEmailAsync(request.Email);
+            if (exists is not null)
+                throw new MyDomainException("E-mail já cadastrado.");
 
+            var user = new User
+            {
+                Name = request.Name,
+                Email = request.Email
+            };
+
+            user.PasswordHash = _passwordHasher.Hash(request.Password);
             user.RefreshToken = _refreshTokenGenerator.GenerateToken();
-            user.RefreshTokenExpiryTime =_refreshTokenGenerator.GetExpirationDate();
+            user.RefreshTokenExpiryTime = _refreshTokenGenerator.GetExpirationDate();
 
-            await _repo.UpdateAsync(user);
+            await _repo.AddAsync(user);
             await _uow.SaveChangesAsync();
 
-            return new LoginResponseDto
+            return new RegisterResponseDto
             {
                 AccessToken = _tokenGenerator.GenerateToken(user),
                 RefreshToken = user.RefreshToken
