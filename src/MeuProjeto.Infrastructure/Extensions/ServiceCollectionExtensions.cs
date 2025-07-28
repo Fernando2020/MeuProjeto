@@ -1,9 +1,11 @@
 ﻿using MeuProjeto.Core.Data;
 using MeuProjeto.Core.Events;
+using MeuProjeto.Core.Messaging;
 using MeuProjeto.Core.Repositories;
 using MeuProjeto.Core.Security;
 using MeuProjeto.Infrastructure.Data;
 using MeuProjeto.Infrastructure.Events;
+using MeuProjeto.Infrastructure.Messaging;
 using MeuProjeto.Infrastructure.Repositories;
 using MeuProjeto.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +23,7 @@ namespace MeuProjeto.Infrastructure.Extensions
             AddSecurity(services, configuration);
             AddLoggedUser(services);
             AddEvents(services);
+            AddRabbitMq(services, configuration);
 
             return services;
         }
@@ -53,6 +56,12 @@ namespace MeuProjeto.Infrastructure.Extensions
         {
             services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
             services.AddScoped<IDomainEventHandler<UserRegisteredEvent>, SendWelcomeEmailHandler>();
+        }
+
+        public static void AddRabbitMq(IServiceCollection services, IConfiguration configuration)
+        {
+            var hostName = configuration["RabbitMq:HostName"]!;
+            services.AddSingleton<IMessagePublisher>(_ => new RabbitMqPublisher(hostName));
         }
     }
 }

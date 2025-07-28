@@ -1,6 +1,7 @@
 using MeuProjeto.Api.Extensions;
 using MeuProjeto.Application.Extensions;
 using MeuProjeto.Infrastructure.Extensions;
+using MeuProjeto.Worker.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddHostedService<UserRegisteredConsumer>();
 
 var app = builder.Build();
 
