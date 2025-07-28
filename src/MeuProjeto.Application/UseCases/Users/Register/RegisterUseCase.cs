@@ -3,6 +3,7 @@ using MeuProjeto.Application.DTOs.Users;
 using MeuProjeto.Core.Data;
 using MeuProjeto.Core.Entities;
 using MeuProjeto.Core.Exceptions;
+using MeuProjeto.Core.Extensions;
 using MeuProjeto.Core.Repositories;
 using MeuProjeto.Core.Security;
 
@@ -30,7 +31,7 @@ namespace MeuProjeto.Application.UseCases.Users.Register
         public async Task<RegisterResponseDto> ExecuteAsync(RegisterRequestDto request)
         {
             var validationResult = await _validator.ValidateAsync(request);
-            if (!validationResult.IsValid)
+            if (validationResult.IsValid.IsFalse())
             {
                 var errors = validationResult.Errors
                     .Select(e => $"{e.PropertyName}: {e.ErrorMessage}")

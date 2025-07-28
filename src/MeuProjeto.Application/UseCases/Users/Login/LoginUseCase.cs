@@ -2,6 +2,7 @@
 using MeuProjeto.Application.DTOs.Users;
 using MeuProjeto.Core.Data;
 using MeuProjeto.Core.Exceptions;
+using MeuProjeto.Core.Extensions;
 using MeuProjeto.Core.Repositories;
 using MeuProjeto.Core.Security;
 
@@ -29,7 +30,7 @@ namespace MeuProjeto.Application.UseCases.Users.Login
         public async Task<LoginResponseDto> ExecuteAsync(LoginRequestDto request)
         {
             var validationResult = await _validator.ValidateAsync(request);
-            if (!validationResult.IsValid)
+            if (validationResult.IsValid.IsFalse())
             {
                 var errors = validationResult.Errors
                     .Select(e => $"{e.PropertyName}: {e.ErrorMessage}")
@@ -38,7 +39,7 @@ namespace MeuProjeto.Application.UseCases.Users.Login
             }
 
             var user = await _repo.GetByEmailAsync(request.Email);
-            if (user == null || !_passwordHasher.Verify(request.Password, user.PasswordHash))
+            if (user == null || _passwordHasher.Verify(request.Password, user.PasswordHash).IsFalse())
                 throw new MyUnauthorizedException();
 
             user.RefreshToken = _refreshTokenGenerator.GenerateToken();
