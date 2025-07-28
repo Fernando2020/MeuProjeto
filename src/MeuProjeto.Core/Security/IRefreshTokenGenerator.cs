@@ -4,5 +4,6 @@
     {
         string GenerateToken();
         DateTime GetExpirationDate();
+        bool Verify(DateTime? refreshTokenExpiryTime);
     }
 }

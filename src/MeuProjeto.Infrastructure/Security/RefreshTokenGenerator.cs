@@ -16,5 +16,10 @@ namespace MeuProjeto.Infrastructure.Security
         {
             return DateTime.UtcNow.Add(_expiration);
         }
+
+        public bool Verify(DateTime? refreshTokenExpiryTime)
+        {
+            return refreshTokenExpiryTime > DateTime.UtcNow;
+        }
     }
 }

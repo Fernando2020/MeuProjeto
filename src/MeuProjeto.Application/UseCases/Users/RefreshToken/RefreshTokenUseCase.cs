@@ -3,6 +3,7 @@ using MeuProjeto.Application.DTOs.Users;
 using MeuProjeto.Core.Data;
 using MeuProjeto.Core.Exceptions;
 using MeuProjeto.Core.Repositories;
+using MeuProjeto.Core.Security;
 
 namespace MeuProjeto.Application.UseCases.Users.RefreshToken
 {
@@ -11,12 +12,16 @@ namespace MeuProjeto.Application.UseCases.Users.RefreshToken
         private readonly IUnitOfWork _uow;
         private readonly IUserRepository _repo;
         private readonly IValidator<RefreshTokenRequestDto> _validator;
+        private readonly IRefreshTokenGenerator _refreshTokenGenerator;
+        private readonly ITokenGenerator _tokenGenerator;
 
-        public RefreshTokenUseCase(IUnitOfWork uow, IUserRepository repo, IValidator<RefreshTokenRequestDto> validator)
+        public RefreshTokenUseCase(IUnitOfWork uow, IUserRepository repo, IValidator<RefreshTokenRequestDto> validator, IRefreshTokenGenerator refreshTokenGenerator, ITokenGenerator tokenGenerator)
         {
             _uow = uow;
             _repo = repo;
             _validator = validator;
+            _refreshTokenGenerator = refreshTokenGenerator;
+            _tokenGenerator = tokenGenerator;
         }
 
         public async Task<LoginResponseDto> ExecuteAsync(RefreshTokenRequestDto request)
@@ -31,18 +36,20 @@ namespace MeuProjeto.Application.UseCases.Users.RefreshToken
             }
 
             var user = await _repo.GetByRefreshTokenAsync(request.RefreshToken);
-            if (user == null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
+            if (user == null || !_refreshTokenGenerator.Verify(user.RefreshTokenExpiryTime))
                 throw new MyUnauthorizedException();
 
-            var newAccess = $"access-{Guid.NewGuid()}";
-            var newRefresh = $"refresh-{Guid.NewGuid()}";
-            user.RefreshToken = newRefresh;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            user.RefreshToken = _refreshTokenGenerator.GenerateToken();
+            user.RefreshTokenExpiryTime = _refreshTokenGenerator.GetExpirationDate();
 
             await _repo.UpdateAsync(user);
             await _uow.SaveChangesAsync();
 
-            return new LoginResponseDto { AccessToken = newAccess, RefreshToken = newRefresh };
+            return new LoginResponseDto
+            {
+                AccessToken = _tokenGenerator.GenerateToken(user),
+                RefreshToken = user.RefreshToken
+            };
         }
     }
 }
