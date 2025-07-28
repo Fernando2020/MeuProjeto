@@ -29,8 +29,6 @@ namespace MeuProjeto.Worker.Consumers
 
             consumer.ReceivedAsync += async (model, ea) =>
             {
-                await Task.Delay(10000);
-
                 var body = ea.Body.ToArray();
                 var json = Encoding.UTF8.GetString(body);
 
