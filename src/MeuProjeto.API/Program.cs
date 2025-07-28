@@ -1,7 +1,6 @@
 using MeuProjeto.Api.Extensions;
 using MeuProjeto.Application.Extensions;
 using MeuProjeto.Infrastructure.Extensions;
-using MeuProjeto.Worker.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +11,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddMyApplication();
+builder.Services.AddMyInfrastructure(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddHostedService<UserRegisteredConsumer>();
+builder.Services.AddMyHostedService();
 
 var app = builder.Build();
 

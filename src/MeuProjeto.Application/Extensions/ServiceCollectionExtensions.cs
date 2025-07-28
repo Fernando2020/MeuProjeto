@@ -10,7 +10,7 @@ namespace MeuProjeto.Application.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddApplication(this IServiceCollection services)
+        public static IServiceCollection AddMyApplication(this IServiceCollection services)
         {
             AddUseCases(services);
             AddValidators(services);
