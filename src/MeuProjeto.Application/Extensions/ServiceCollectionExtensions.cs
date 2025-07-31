@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MeuProjeto.Application.DTOs.Users;
+using MeuProjeto.Application.UseCases.Users.ChangePassword;
 using MeuProjeto.Application.UseCases.Users.Login;
 using MeuProjeto.Application.UseCases.Users.RefreshToken;
 using MeuProjeto.Application.UseCases.Users.Register;
@@ -24,6 +25,7 @@ namespace MeuProjeto.Application.Extensions
             services.AddScoped<IRefreshTokenUseCase, RefreshTokenUseCase>();
             services.AddScoped<IRegisterUseCase, RegisterUseCase>();
             services.AddScoped<IUserProfileUseCase, UserProfileUseCase>();
+            services.AddScoped<IChangePasswordUseCase, ChangePasswordUseCase>();
         }
 
         private static void AddValidators(IServiceCollection services)
@@ -31,6 +33,7 @@ namespace MeuProjeto.Application.Extensions
             services.AddScoped<IValidator<LoginRequestDto>, LoginRequestDtoValidator>();
             services.AddScoped<IValidator<RefreshTokenRequestDto>, RefreshTokenRequestDtoValidator>();
             services.AddScoped<IValidator<RegisterRequestDto>, RegisterRequestDtoValidator>();
+            services.AddScoped<IValidator<ChangePasswordRequestDto>, ChangePasswordRequestDtoValidator>();
         }
     }
 }
