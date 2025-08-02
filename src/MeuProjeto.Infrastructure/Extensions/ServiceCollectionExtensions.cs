@@ -57,6 +57,7 @@ namespace MeuProjeto.Infrastructure.Extensions
             services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
             services.AddScoped<IDomainEventHandler<UserRegisteredEvent>, SendWelcomeEmailHandler>();
             services.AddScoped<IDomainEventHandler<PasswordChangedEvent>, PasswordChangedHandler>();
+            services.AddScoped<IDomainEventHandler<LoginCompletedEvent>, LoginCompletedHandler>();
         }
 
         public static void AddRabbitMq(IServiceCollection services, IConfiguration configuration)

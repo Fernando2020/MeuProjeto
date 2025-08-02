@@ -8,6 +8,7 @@ namespace MeuProjeto.Api.Extensions
         {
             services.AddHostedService<UserRegisteredConsumer>();
             services.AddHostedService<PasswordChangedConsumer>();
+            services.AddHostedService<LoginCompletedConsumer>();
 
             return services;
         }

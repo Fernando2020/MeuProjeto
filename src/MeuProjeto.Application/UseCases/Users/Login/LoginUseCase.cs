@@ -2,6 +2,7 @@
 using MeuProjeto.Application.DTOs.Users;
 using MeuProjeto.Application.Extensions;
 using MeuProjeto.Core.Data;
+using MeuProjeto.Core.Events;
 using MeuProjeto.Core.Exceptions;
 using MeuProjeto.Core.Repositories;
 using MeuProjeto.Core.Security;
@@ -16,8 +17,9 @@ namespace MeuProjeto.Application.UseCases.Users.Login
         private readonly IRefreshTokenGenerator _refreshTokenGenerator;
         private readonly IPasswordHasher _passwordHasher;
         private readonly ITokenGenerator _tokenGenerator;
+        private readonly IDomainEventDispatcher _domainEventDispatcher;
 
-        public LoginUseCase(IUnitOfWork uow, IUserRepository repo, IValidator<LoginRequestDto> validator, IRefreshTokenGenerator refreshTokenGenerator, IPasswordHasher passwordHasher, ITokenGenerator tokenGenerator)
+        public LoginUseCase(IUnitOfWork uow, IUserRepository repo, IValidator<LoginRequestDto> validator, IRefreshTokenGenerator refreshTokenGenerator, IPasswordHasher passwordHasher, ITokenGenerator tokenGenerator, IDomainEventDispatcher domainEventDispatcher)
         {
             _uow = uow;
             _repo = repo;
@@ -25,6 +27,7 @@ namespace MeuProjeto.Application.UseCases.Users.Login
             _refreshTokenGenerator = refreshTokenGenerator;
             _passwordHasher = passwordHasher;
             _tokenGenerator = tokenGenerator;
+            _domainEventDispatcher = domainEventDispatcher;
         }
 
         public async Task<LoginResponseDto> ExecuteAsync(LoginRequestDto request)
@@ -42,6 +45,8 @@ namespace MeuProjeto.Application.UseCases.Users.Login
 
             await _repo.UpdateAsync(user);
             await _uow.SaveChangesAsync();
+
+            await _domainEventDispatcher.DispatchAsync(new LoginCompletedEvent(user.Name, user.Email));
 
             return new LoginResponseDto
             {
