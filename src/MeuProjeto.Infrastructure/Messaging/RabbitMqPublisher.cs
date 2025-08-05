@@ -18,13 +18,6 @@ namespace MeuProjeto.Infrastructure.Messaging
         {
             var channel = await _connection.CreateChannelAsync();
 
-            await channel.QueueDeclareAsync(
-                queue: queueName,
-                durable: true,
-                exclusive: false,
-                autoDelete: false
-            );
-
             var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
 
             await channel.BasicPublishAsync(

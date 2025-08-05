@@ -34,14 +34,6 @@ namespace MeuProjeto.Worker.Consumers
         {
             var channel = await _rabbitMqConnection.CreateChannelAsync();
 
-            await channel.QueueDeclareAsync(
-                queue: QueueName,
-                durable: true,
-                exclusive: false,
-                autoDelete: false,
-                cancellationToken: stoppingToken
-            );
-
             var consumer = new AsyncEventingBasicConsumer(channel);
 
             consumer.ReceivedAsync += async (model, ea) =>
@@ -65,7 +57,8 @@ namespace MeuProjeto.Worker.Consumers
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Erro ao processar mensagem da fila {Queue}", QueueName);
-                    // Possível implementação de retry ou DLQ
+                    await channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
+                    // Pode ser criar um consumer para o Dead Letter e processar as mensagens de erro.
                 }
             };
 
