@@ -35,4 +35,6 @@ app.UseCustomExceptionHandler();
 
 app.MapControllers();
 
+await app.InitializeRabbitMqAsync();
+
 app.Run();

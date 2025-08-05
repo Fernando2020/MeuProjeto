@@ -71,6 +71,7 @@ namespace MeuProjeto.Infrastructure.Extensions
             services.Configure<RabbitMqSettings>(configuration.GetSection("RabbitMq"));
 
             services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
+            services.AddScoped<IRabbitMqSetup, RabbitMqSetup>();
             services.AddScoped<IMessagePublisher, RabbitMqPublisher>();
         }
 
