@@ -58,7 +58,8 @@ namespace MeuProjeto.Worker.Consumers
                 {
                     _logger.LogError(ex, "Erro ao processar mensagem da fila {Queue}", QueueName);
                     await channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
-                    // Pode ser criar um consumer para o Dead Letter e processar as mensagens de erro.
+                    // TODO: Pode ser criar um consumer para o Dead Letter e processar as mensagens de erro.
+                    // TODO: Pode ser implementado também um Retry
                 }
             };
 

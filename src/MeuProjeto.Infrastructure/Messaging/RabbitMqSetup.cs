@@ -16,10 +16,7 @@ namespace MeuProjeto.Infrastructure.Messaging
         {
             var channel = await _connection.CreateChannelAsync();
 
-            // Exchange principal vazia porque você está usando fila direta sem exchange explícita
-            // Se quiser usar exchange, declare aqui
-
-            // Declare fila principal com dead letter configurado
+            // Fila principal
             await channel.QueueDeclareAsync(
                 queue: QueueConstants.EMAIL_QUEUE,
                 durable: true,
@@ -32,7 +29,7 @@ namespace MeuProjeto.Infrastructure.Messaging
                 }
             );
 
-            // Declare fila DLQ
+            // DLQ
             await channel.QueueDeclareAsync(
                 queue: QueueConstants.EMAIL_QUEUE_DLQ,
                 durable: true,
@@ -40,9 +37,6 @@ namespace MeuProjeto.Infrastructure.Messaging
                 autoDelete: false
             );
 
-            // Se quiser usar Retry com TTL depois, declare a fila retry aqui
-
-            // Opcional: outros bindings e exchanges, caso use
 
             await channel.CloseAsync();
         }
