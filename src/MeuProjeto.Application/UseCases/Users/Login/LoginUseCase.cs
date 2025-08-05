@@ -3,6 +3,7 @@ using MeuProjeto.Application.DTOs.Users;
 using MeuProjeto.Application.Extensions;
 using MeuProjeto.Core.Data;
 using MeuProjeto.Core.Events;
+using MeuProjeto.Core.Events.LoginCompleted;
 using MeuProjeto.Core.Exceptions;
 using MeuProjeto.Core.Repositories;
 using MeuProjeto.Core.Security;
@@ -46,7 +47,7 @@ namespace MeuProjeto.Application.UseCases.Users.Login
             await _repo.UpdateAsync(user);
             await _uow.SaveChangesAsync();
 
-            await _domainEventDispatcher.DispatchAsync(new LoginCompletedEvent(user.Name, user.Email));
+            await _domainEventDispatcher.DispatchAsync(new LoginCompletedEvent(user.Id, user.Name, user.Email));
 
             return new LoginResponseDto
             {

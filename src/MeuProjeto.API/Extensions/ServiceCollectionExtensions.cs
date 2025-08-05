@@ -6,9 +6,7 @@ namespace MeuProjeto.Api.Extensions
     {
         public static IServiceCollection AddMyHostedService(this IServiceCollection services)
         {
-            services.AddHostedService<UserRegisteredConsumer>();
-            services.AddHostedService<PasswordChangedConsumer>();
-            services.AddHostedService<LoginCompletedConsumer>();
+            services.AddHostedService<EmailConsumer>();
 
             return services;
         }

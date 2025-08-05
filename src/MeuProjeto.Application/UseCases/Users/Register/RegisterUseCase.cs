@@ -4,6 +4,7 @@ using MeuProjeto.Application.Extensions;
 using MeuProjeto.Core.Data;
 using MeuProjeto.Core.Entities;
 using MeuProjeto.Core.Events;
+using MeuProjeto.Core.Events.UserRegistered;
 using MeuProjeto.Core.Exceptions;
 using MeuProjeto.Core.Repositories;
 using MeuProjeto.Core.Security;

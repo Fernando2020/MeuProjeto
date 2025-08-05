@@ -5,29 +5,34 @@ using System.Text.Json;
 
 namespace MeuProjeto.Infrastructure.Messaging
 {
-    internal class RabbitMqPublisher : IMessagePublisher
+    public class RabbitMqPublisher : IMessagePublisher
     {
-        private readonly ConnectionFactory _factory;
+        private readonly IRabbitMqConnection _connection;
 
-        public RabbitMqPublisher(string hostName)
+        public RabbitMqPublisher(IRabbitMqConnection connection)
         {
-            _factory = new ConnectionFactory
-            {
-                HostName = hostName
-            };
+            _connection = connection;
         }
 
-        public async Task PublishAsync<T>(string queueName, T message)
+        public async Task PublishAsync(string queueName, object message)
         {
-            using var connection = await _factory.CreateConnectionAsync();
-            using var channel = await connection.CreateChannelAsync();
+            var channel = await _connection.CreateChannelAsync();
 
-            await channel.QueueDeclareAsync(queue: queueName, durable: true, exclusive: false, autoDelete: false);
+            await channel.QueueDeclareAsync(
+                queue: queueName,
+                durable: true,
+                exclusive: false,
+                autoDelete: false
+            );
 
-            var json = JsonSerializer.Serialize(message);
-            var body = Encoding.UTF8.GetBytes(json);
+            var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
 
-            await channel.BasicPublishAsync(exchange: "", routingKey: queueName, body: body);
+            await channel.BasicPublishAsync(
+                exchange: string.Empty,
+                routingKey: queueName,
+                mandatory: false,
+                body: body
+            );
         }
     }
 }

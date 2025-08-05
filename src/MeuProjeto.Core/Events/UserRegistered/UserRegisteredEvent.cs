@@ -1,4 +1,4 @@
-﻿namespace MeuProjeto.Core.Events
+﻿namespace MeuProjeto.Core.Events.UserRegistered
 {
     public class UserRegisteredEvent
     {
