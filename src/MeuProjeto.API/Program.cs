@@ -1,8 +1,17 @@
 using MeuProjeto.Api.Extensions;
 using MeuProjeto.Application.Extensions;
 using MeuProjeto.Infrastructure.Extensions;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((ctx, lc) =>
+{
+    lc.ReadFrom.Configuration(ctx.Configuration)
+      .Enrich.FromLogContext()
+      .Enrich.WithMachineName()
+      .Enrich.WithThreadId();
+});
 
 // Add services to the container.
 

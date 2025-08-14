@@ -1,5 +1,6 @@
 ﻿using MeuProjeto.Application.DTOs.Exceptions;
 using MeuProjeto.Core.Exceptions;
+using Serilog;
 using System.Net;
 using System.Text.Json;
 
@@ -22,8 +23,16 @@ namespace MeuProjeto.Api.Middlewares
             }
             catch (Exception ex)
             {
+                LogException(ex, context);
                 await HandleExceptionAsync(context, ex);
             }
+        }
+
+        private static void LogException(Exception exception, HttpContext context)
+        {
+            Log.Error(exception, "Erro ao processar {Method} {Path}",
+                context.Request.Method,
+                context.Request.Path);
         }
 
         private static async Task HandleExceptionAsync(HttpContext context, Exception exception)

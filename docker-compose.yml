@@ -18,13 +18,26 @@ services:
     image: rabbitmq:3-management
     container_name: meu_rabbitmq
     ports:
-      - "5672:5672"   
+      - "5672:5672"
       - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
     networks:
       - meuprojeto-network
+
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    ports:
+      - "5341:80"
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_ADMINPASSWORD=admin123456
+    networks:
+      - meuprojeto-network
+    volumes:
+      - seq_data:/data
 
   api:
     build:
@@ -33,6 +46,8 @@ services:
     container_name: meuprojeto-api
     depends_on:
       - sqlserver
+      - rabbitmq
+      - seq
     ports:
       - "8080:8080"
     environment:
@@ -46,3 +61,4 @@ networks:
 
 volumes:
   sql_data:
+  seq_data:
